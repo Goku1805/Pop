@@ -8,45 +8,83 @@
 		<div class="visible-text">
 			<h3 class="heading">Popover Example</h3>
 			<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type.  Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever  since the 1500s, book.  </p>
-			<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard <a href="#" class="1" id="link1" onclick="popOver(this)"> specimen</a>dummy text ever since the 1500s,</p>
+			<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard <a href="#" class="data-popover" data-position="left" data-title="Trigger 1" data-description="Curabitur ut augue non risus consequat eleifend eu id sapien."> specimen</a>dummy text ever since the 1500s,</p>
 			<p>Lorem Ipsum  is simply dummy text of the printing  and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,</p>
-			<p>Lorem<a href="#" class="1" id="link2" onclick="popOver(this)"> specimen</a> Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,</p>
-			<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,</p>
-			<p>Lorem Ipsum is simply dummy text of the printing and typesetting<a href="#" class="1" id="link3" onclick="popOver(this)"> specimen</a> industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,</p>
-		</div>
-		<div class="pop-container" id="popover">
-			<div class="pop-child ">an individual animal, plant, piece of a mineral, etc. used as an example of its species or type for scientific study or display.</div>
+			<p>Lorem<a href="#" class="data-popover" data-position="right" data-title="Trigger 2" data-description="Curabitur ut augue non risus consequat eleifend eu id sapien." > specimen</a> Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,</p>
+			<p>Lorem Ipsum is simply dummy text of the printing<a href="#" class="data-popover" data-position="right" data-title="Trigger 2" data-description="Curabitur ut augue non risus consequat eleifend eu id sapien." > specimen</a> and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,</p>
+			<p>Lorem Ipsum is simply dummy text of the printing and typesetting<a href="#" class="data-popover" data-position="bottom" data-title="Trigger 3" data-description="Curabitur ut augue non risus consequat eleifend eu id sapien." > specimen</a> industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,</p>
 		</div>
 	</div>
 	<script type="text/javascript">
-		let click = 1;
-		
-
-		function popOver(obj){
-			var m = document.getElementsByClassName("1");
-			console.log(m);
-			console.log(options);
-			function offset(el) {
-		    var rect = el.getBoundingClientRect(),
-    		scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
-    		scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    		return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
+		function offset(el) {
+	    var rect = el.getBoundingClientRect(),
+  		scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
+  		scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  		return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
 		}
-			var id = document.getElementById(obj.id);
-			var result = offset(id);
+		(function() {
+			var theme = {
+				init: function() {
+					this.enablePopover();
+				},
+				enablePopover: function(){
+					var elements = document.getElementsByClassName("data-popover");
+					if(elements.length===0) return;
+					document.body.style.position="relative";
+					for(var i = 0;i<elements.length;i++){
+						var element = elements[i];
+						element.addEventListener("click",function(e){
+							e.preventDefault();
+							var element= this;
+							var elPosition = offset(this);
+							var title = element.dataset.title;
+							var position = element.dataset.position;
+							var description = element.dataset.description;
 
-			if(click % 2 != 0){
-				document.getElementById("popover").style.transform="scale(1)";
-				document.getElementById("popover").style.left=result.left+"px";
-				document.getElementById("popover").style.top=result.top+20 +"px";
-				click++;
-			}
-			else{
-				document.getElementById("popover").style.transform="scale(0)";
-				click++;
+							if(element.dataset.active==='true'){
+								var instance = element._popoverInstance;
+								delete instance;
+								instance.parentNode.removeChild(instance);
+								element.dataset.active = false;
 
-			}
-		}
+							}
+							else{
+								element.dataset.active=true;
+								var div = document.createElement("div");
+								div.classList.add('popover');
+								div.classList.add('popover--' + position);
+								var h6 = document.createElement('h6');
+								var p = document.createElement('p');
+								div.style.position="absolute";
+
+								div.style.top = ( elPosition.top - element.offsetHeight ) + 'px';
+								div.style.left = elPosition.left + 'px';
+
+								if(position === 'right') {
+									div.style.left = ( elPosition.left + element.offsetWidth ) + 'px';
+								} else if(position === 'bottom') {
+									div.style.top = ( elPosition.top + element.offsetHeight ) + 'px';
+								}
+
+								h6.innerHTML = title;
+								p.innerHTML = description;
+								div.appendChild(h6);
+								div.appendChild(p);
+								document.body.appendChild(div);
+								element._popoverInstance = div;
+
+							}
+						});
+
+					}
+				}
+				}
+
+			document.addEventListener('DOMContentLoaded', function() {
+				theme.init();
+			});
+		})();	
+			
 	
 	</script>
 </body>
